@@ -1,0 +1,11 @@
+services:
+  radha-tool:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./temp:/app/temp
+    environment:
+      - RUNNING_IN_DOCKER=1

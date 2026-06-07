@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.pyc.*
+.venv/
+venv/
+
+input/*
+!input/.gitkeep
+
+output/*
+!output/.gitkeep
+
+temp/*
+!temp/.gitkeep

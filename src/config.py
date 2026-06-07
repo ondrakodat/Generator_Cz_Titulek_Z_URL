@@ -1,0 +1,46 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+INPUT_DIR = PROJECT_ROOT / "input"
+OUTPUT_DIR = PROJECT_ROOT / "output"
+TEMP_DIR = PROJECT_ROOT / "temp"
+
+SOURCE_VIDEO = INPUT_DIR / "source.mp4"
+RAW_RU_SRT = OUTPUT_DIR / "subtitles_original_raw.srt"
+CLEAN_RU_SRT = OUTPUT_DIR / "subtitles_original_context_fixed.srt"
+CS_SRT = OUTPUT_DIR / "subtitles_cs.srt"
+OUTPUT_VIDEO = OUTPUT_DIR / "video_cz.mp4"
+
+DEFAULT_OCR_LANG = "ru"
+DEFAULT_TARGET_LANG = "cs"
+DEFAULT_SAMPLE_RATE = 0.75
+DEFAULT_SUBTITLE_AREA = "bottom:25"
+DEFAULT_BOX_HEIGHT = 18.0
+DEFAULT_OLLAMA_MODEL = "qwen2.5:7b"
+DEFAULT_OCR_PRESET = "recall"
+DEFAULT_DEEP_OCR = "none"
+DEFAULT_SPEED_MODE = "balanced"
+DEFAULT_CROP_X1 = 0.08
+DEFAULT_CROP_X2 = 0.92
+DEFAULT_CROP_Y1 = 0.78
+DEFAULT_CROP_Y2 = 0.93
+DEFAULT_OCR_PREPROCESS = "auto"
+DEFAULT_OCR_ENGINE = "paddle"
+DEFAULT_SUBTITLE_STYLE = "auto"
+DEFAULT_AI_CLEANUP = "auto"
+DEFAULT_TRANSLATION_BATCH_SIZE = 20
+DEFAULT_TESSERACT_PSM = 6
+DEFAULT_MIN_CYRILLIC_RATIO = 0.25
+DEFAULT_MIN_CYRILLIC_CHARS = 3
+DEFAULT_MERGE_SIMILARITY = 0.68
+DEFAULT_MAX_SUBTITLE_GAP = 2.5
+OCR_SAMPLES = OUTPUT_DIR / "ocr_samples.txt"
+OCR_COMPARE = OUTPUT_DIR / "ocr_compare.txt"
+OCR_REPORT = OUTPUT_DIR / "ocr_report.txt"
+OCR_REPORT_JSON = OUTPUT_DIR / "ocr_report.json"
+CONTEXT_CORRECTIONS = OUTPUT_DIR / "context_corrections.json"
+TRANSLATION_REPORT = OUTPUT_DIR / "translation_report.json"
+TRANSLATION_CACHE = OUTPUT_DIR / "translation_cache.json"

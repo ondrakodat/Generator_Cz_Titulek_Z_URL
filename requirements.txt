@@ -1,0 +1,11 @@
+yt-dlp>=2025.1.15
+Flask>=3.0.0
+deep-translator>=1.11.4
+paddlepaddle==3.2.2
+paddleocr==3.5.0
+numpy<2.4
+opencv-python>=4.10.0
+srt>=3.5.3
+requests>=2.32.0
+pytesseract>=0.3.13
+Pillow>=10.4.0

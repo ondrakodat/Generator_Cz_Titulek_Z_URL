@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyc.*
+.pytest_cache/
+pytest-cache-files-*/
+tests/
+.git/
+input/*
+output/*
+temp/*
+!input/.gitkeep
+!output/.gitkeep
+!temp/.gitkeep

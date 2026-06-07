@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>České titulky k seriálu Radha a Krishna</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>České titulky k seriálu Radha a Krishna</h1>
+        <p>Vložte odkazy, klikněte jednou a aplikace vytvoří hotová videa s českými titulky.</p>
+      </div>
+      <span class="status-pill" id="status">Připraveno</span>
+    </section>
+
+    <section class="panel primary-panel">
+      <form id="batchForm">
+        <label class="url-field">
+          <span>Vložte odkazy na videa, každý na nový řádek</span>
+          <textarea name="urls" id="urlsInput" rows="7" placeholder="https://...&#10;https://..."></textarea>
+        </label>
+
+        <div class="actions-row">
+          <button type="submit" id="startButton" class="primary-button">Spustit zpracování</button>
+          <button type="button" id="stopButton" class="danger-button" disabled>Zastavit zpracování</button>
+          <button type="button" id="resetButton" class="light-button">Nová dávka</button>
+        </div>
+
+        <label class="simple-check">
+          <input type="checkbox" name="only_srt"> Pouze vytvořit SRT bez videa
+        </label>
+
+        <details class="advanced expert-panel">
+          <summary>Expertní režim pro ladění</summary>
+          <div class="checks">
+            <label><input type="checkbox" name="cookies_chrome"> Použít cookies z Chrome</label>
+            <label><input type="checkbox" name="cookies_edge"> Použít cookies z Edge</label>
+            <label><input type="checkbox" name="detect_subtitle_changes"> Detekovat změny titulků</label>
+            <label><input type="checkbox" name="expert_enable_paddle"> Povolit PaddleOCR</label>
+            <label><input type="checkbox" name="cleanup_temp" {% if defaults.cleanup_temp %}checked{% endif %}> Smazat pomocné soubory po dokončení</label>
+            <label><input type="checkbox" name="debug_crops"> Uložit debug OCR cropy</label>
+            <label><input type="checkbox" name="debug_subtitle_detection"> Uložit debug detekce titulků</label>
+            <label><input type="checkbox" name="manual_crop"> Použít ruční OCR crop</label>
+          </div>
+
+          <div class="advanced-grid">
+            <label>OCR engine
+              <select name="ocr_engine">
+                <option value="paddle" {% if defaults.ocr_engine == "paddle" %}selected{% endif %}>PaddleOCR</option>
+                <option value="tesseract" {% if defaults.ocr_engine == "tesseract" %}selected{% endif %}>Tesseract</option>
+                <option value="compare" {% if defaults.ocr_engine == "compare" %}selected{% endif %}>Porovnat oba</option>
+              </select>
+            </label>
+            <label>Detekce titulků
+              <select name="subtitle_detect_mode">
+                <option value="white-text" {% if defaults.subtitle_detect_mode == "white-text" %}selected{% endif %}>white-text</option>
+                <option value="hybrid" {% if defaults.subtitle_detect_mode == "hybrid" %}selected{% endif %}>hybrid</option>
+                <option value="diff" {% if defaults.subtitle_detect_mode == "diff" %}selected{% endif %}>diff</option>
+              </select>
+            </label>
+            <label>OCR preset
+              <select name="ocr_preset">
+                <option value="maximum_recall" {% if defaults.ocr_preset == "maximum_recall" %}selected{% endif %}>maximum_recall</option>
+                <option value="recall" {% if defaults.ocr_preset == "recall" %}selected{% endif %}>recall</option>
+                <option value="balanced" {% if defaults.ocr_preset == "balanced" %}selected{% endif %}>balanced</option>
+                <option value="strict" {% if defaults.ocr_preset == "strict" %}selected{% endif %}>strict</option>
+              </select>
+            </label>
+            <label>Speed mode
+              <select name="speed_mode">
+                <option value="fast" {% if defaults.speed_mode == "fast" %}selected{% endif %}>fast</option>
+                <option value="balanced" {% if defaults.speed_mode == "balanced" %}selected{% endif %}>balanced</option>
+                <option value="quality" {% if defaults.speed_mode == "quality" %}selected{% endif %}>quality</option>
+              </select>
+            </label>
+            <label>Quality profile
+              <select name="quality_profile">
+                <option value="default" {% if defaults.quality_profile == "default" %}selected{% endif %}>default</option>
+                <option value="legacy_good" {% if defaults.quality_profile == "legacy_good" %}selected{% endif %}>legacy_good</option>
+              </select>
+            </label>
+            <label>Deep OCR
+              <select name="deep_ocr">
+                <option value="none" {% if defaults.deep_ocr == "none" %}selected{% endif %}>none</option>
+                <option value="short" {% if defaults.deep_ocr == "short" %}selected{% endif %}>short</option>
+                <option value="aggressive" {% if defaults.deep_ocr == "aggressive" %}selected{% endif %}>aggressive</option>
+              </select>
+            </label>
+            <label>OCR preprocessing
+              <select name="ocr_preprocess">
+                <option value="auto" {% if defaults.ocr_preprocess == "auto" %}selected{% endif %}>auto</option>
+                <option value="none" {% if defaults.ocr_preprocess == "none" %}selected{% endif %}>none</option>
+                <option value="grayscale" {% if defaults.ocr_preprocess == "grayscale" %}selected{% endif %}>grayscale</option>
+                <option value="contrast" {% if defaults.ocr_preprocess == "contrast" %}selected{% endif %}>contrast</option>
+                <option value="threshold" {% if defaults.ocr_preprocess == "threshold" %}selected{% endif %}>threshold</option>
+                <option value="adaptive" {% if defaults.ocr_preprocess == "adaptive" %}selected{% endif %}>adaptive</option>
+                <option value="denoise" {% if defaults.ocr_preprocess == "denoise" %}selected{% endif %}>denoise</option>
+                <option value="subtitle" {% if defaults.ocr_preprocess == "subtitle" %}selected{% endif %}>subtitle</option>
+                <option value="simple" {% if defaults.ocr_preprocess == "simple" %}selected{% endif %}>simple</option>
+              </select>
+            </label>
+            <label>Styl titulků
+              <select name="subtitle_style">
+                <option value="white" {% if defaults.subtitle_style == "white" %}selected{% endif %}>bílé</option>
+                <option value="auto" {% if defaults.subtitle_style == "auto" %}selected{% endif %}>auto</option>
+                <option value="yellow" {% if defaults.subtitle_style == "yellow" %}selected{% endif %}>žluté</option>
+              </select>
+            </label>
+            <label>Překlad
+              <select name="translator">
+                <option value="auto" {% if defaults.translator == "auto" %}selected{% endif %}>auto</option>
+                <option value="google" {% if defaults.translator == "google" %}selected{% endif %}>Google</option>
+                <option value="ollama" {% if defaults.translator == "ollama" %}selected{% endif %}>Ollama</option>
+                <option value="none" {% if defaults.translator == "none" %}selected{% endif %}>žádný</option>
+              </select>
+            </label>
+            <label>Sample rate
+              <input type="number" name="sample_rate" min="0.1" step="0.1" value="{{ defaults.sample_rate }}">
+            </label>
+            <label>OCR min gap
+              <input type="number" name="ocr_min_gap" min="0" step="0.1" value="{{ defaults.ocr_min_gap }}">
+            </label>
+            <label>Mask similarity
+              <input type="number" name="subtitle_mask_similarity" min="0" max="1" step="0.01" value="{{ defaults.subtitle_mask_similarity }}">
+            </label>
+            <label>OCR frame timeout
+              <input type="number" name="ocr_frame_timeout" min="1" step="1" value="{{ defaults.ocr_frame_timeout }}">
+            </label>
+            <label>Paddle init timeout
+              <input type="number" name="paddle_init_timeout" min="1" step="1" value="{{ defaults.paddle_init_timeout }}">
+            </label>
+            <label>Max actual OCR
+              <input type="number" name="max_actual_ocr_calls" min="1" step="1" value="{{ defaults.max_actual_ocr_calls }}">
+            </label>
+            <label>Crop X1
+              <input type="number" name="crop_x1" min="0" max="1" step="0.01" value="{{ defaults.crop_x1 }}">
+            </label>
+            <label>Crop X2
+              <input type="number" name="crop_x2" min="0" max="1" step="0.01" value="{{ defaults.crop_x2 }}">
+            </label>
+            <label>Crop Y1
+              <input type="number" name="crop_y1" min="0" max="1" step="0.01" value="{{ defaults.crop_y1 }}">
+            </label>
+            <label>Crop Y2
+              <input type="number" name="crop_y2" min="0" max="1" step="0.01" value="{{ defaults.crop_y2 }}">
+            </label>
+            <label>Start time
+              <input type="text" name="start_time" inputmode="numeric" pattern="\d{2}:\d{2}:\d{2}" placeholder="00:00:30" value="{{ defaults.start_time }}">
+            </label>
+            <label>End time
+              <input type="text" name="end_time" inputmode="numeric" pattern="\d{2}:\d{2}:\d{2}" placeholder="00:05:00" value="{{ defaults.end_time }}">
+            </label>
+            <label>Max OCR framů
+              <input type="number" name="max_ocr_frames" min="1" step="1" placeholder="300" value="{{ defaults.max_ocr_frames }}">
+            </label>
+            <label>Výška pruhu (%)
+              <input type="number" name="box_height" min="1" max="60" step="1" value="{{ defaults.box_height }}">
+            </label>
+            <label>AI cleanup
+              <select name="ai_cleanup">
+                <option value="none" {% if defaults.ai_cleanup == "none" %}selected{% endif %}>vypnuto</option>
+                <option value="auto" {% if defaults.ai_cleanup == "auto" %}selected{% endif %}>auto</option>
+                <option value="ollama" {% if defaults.ai_cleanup == "ollama" %}selected{% endif %}>Ollama</option>
+              </select>
+            </label>
+          </div>
+
+          <input type="hidden" name="ocr_lang" value="{{ defaults.ocr_lang }}">
+          <input type="hidden" name="target_lang" value="{{ defaults.target_lang }}">
+          <input type="hidden" name="translation_batch_size" value="{{ defaults.translation_batch_size }}">
+          <input type="hidden" name="subtitle_area" value="{{ defaults.subtitle_area }}">
+          <input type="hidden" name="tesseract_psm" value="{{ defaults.tesseract_psm }}">
+          <input type="hidden" name="min_cyrillic_ratio" value="{{ defaults.min_cyrillic_ratio }}">
+          <input type="hidden" name="min_cyrillic_chars" value="{{ defaults.min_cyrillic_chars }}">
+          <input type="hidden" name="merge_similarity" value="{{ defaults.merge_similarity }}">
+          <input type="hidden" name="max_subtitle_gap" value="{{ defaults.max_subtitle_gap }}">
+        </details>
+      </form>
+    </section>
+
+    <section class="panel progress-panel">
+      <div class="progress-top">
+        <strong id="stageText">Připraveno</strong>
+        <span id="overallProgressText">0 %</span>
+      </div>
+      <div class="progress-bar" aria-label="Celkový průběh dávky">
+        <div id="overallProgressFill"></div>
+      </div>
+      <div class="sub-progress">
+        <span>Aktuální video</span>
+        <strong id="currentProgressText">0 %</strong>
+      </div>
+      <div class="progress-bar small" aria-label="Průběh aktuálního videa">
+        <div id="currentProgressFill"></div>
+      </div>
+      <ul id="humanLog" class="human-log"></ul>
+    </section>
+
+    <section class="panel queue-panel">
+      <h2>Fronta videí</h2>
+      <div id="queueList" class="queue-list"></div>
+    </section>
+
+    <details class="panel details-panel">
+      <summary>Technické podrobnosti</summary>
+      <pre id="technicalLog"></pre>
+    </details>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
