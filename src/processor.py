@@ -315,7 +315,7 @@ def process_video(options: ProcessOptions, defender_continue_callback: Callable[
 
     from src.context_correction import correct_hindu_context
     from src.frame_extractor import CropRegion, extract_subtitle_crops
-    from src.subtitle_builder import build_subtitle_blocks, write_srt
+    from src.subtitle_builder import build_subtitle_blocks, filter_obvious_ocr_noise_blocks, write_srt
     from src.translator import Translator, translate_blocks
 
     logging.info("Automatický režim kvality zapnut")
@@ -387,6 +387,7 @@ def process_video(options: ProcessOptions, defender_continue_callback: Callable[
         max_join_gap=options.max_subtitle_gap,
         similarity_threshold=preset_values["merge_similarity"],
     )
+    ru_blocks = filter_obvious_ocr_noise_blocks(ru_blocks)
     logging.info("Po OCR bylo vytvořeno %d titulků.", len(ru_blocks))
     append_timing_to_report(options.ocr_report, ocr_frame_count, ru_blocks)
     log_ocr_detection_summary(options, extraction_stats, len(actual_candidates), len(ru_blocks))
@@ -410,6 +411,7 @@ def process_video(options: ProcessOptions, defender_continue_callback: Callable[
             max_join_gap=options.max_subtitle_gap,
             similarity_threshold=preset_values["merge_similarity"],
         )
+        ru_blocks = filter_obvious_ocr_noise_blocks(ru_blocks)
         logging.info("Po OCR recall fallback bylo vytvoreno %d titulku.", len(ru_blocks))
         append_timing_to_report(options.ocr_report, ocr_frame_count, ru_blocks)
         log_ocr_detection_summary(options, extraction_stats, sum(1 for crop in crops if crop.has_subtitle and crop.changed), len(ru_blocks))
