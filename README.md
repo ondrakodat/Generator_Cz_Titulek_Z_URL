@@ -1,6 +1,6 @@
 # Radha Subtitle Tool
 
-Jednoducha webova aplikace pro automaticke vytvoreni ceskych titulku a hotovych videi k serialu Radha a Krishna.
+Jednoducha vibe coded webova aplikace pro automaticke vytvoreni ceskych titulku a hotovych videi k serialu Radha a Krishna.
 
 ## Bezna webova obsluha
 
